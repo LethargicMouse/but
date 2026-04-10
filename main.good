@@ -1,0 +1,43 @@
+fn main() {
+  println("hello world");
+}
+
+fn println<s: display>(s)
+  do stdout.wprintln(s);
+
+let stdout: file = file { fd: 1 };
+
+fn wprintln<w: writer, s: display>(w, s) {
+  w.wprint(s);
+  w.wprint("\n");
+}
+
+trait display {
+  fn wprint<w: writer>(w, self);
+}
+
+impl display for str {
+  fn wprint<w: writer>(w, self)
+    do w.wwrite(self);
+}
+
+trait writer {
+  fn wwrite(self, str);
+}
+
+type str = [u8];
+
+struct file { fd }
+
+type fd = i32;
+
+impl writer for file {
+  fn wwrite(self, str)
+    do write(self.fd, str.ptr, str.size);
+}
+
+extern fn write(fd, cstr, size);
+
+type cstr = *u8;
+
+type size = u64;
